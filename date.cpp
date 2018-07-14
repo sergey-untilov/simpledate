@@ -114,27 +114,24 @@ Date DateInterval(Date begin, Date end) {
     uint endMonth = Month(end);
     uint endDay = Day(end);
 
-    uint year = 0, month = 0, day = 0;
-
-    year = endYear - beginYear;
-
+    uint year = endYear - beginYear;
     if (year && endMonth < beginMonth)
         year--;
 
-    if (endMonth >= beginMonth)
-        month = endMonth - beginMonth;
-    else
-        month = endMonth + beginMonth - 12;
+    uint month = (endMonth >= beginMonth)
+        ? endMonth - beginMonth
+        : endMonth + beginMonth - 12;
 
     bool isBothLastDayInFebruary =
         endMonth == 2 && beginMonth == 2 && endYear != beginYear
         && endDay == MonthSize(endYear, endMonth)
         && beginDay == MonthSize(beginYear, beginMonth);
 
-    if (!isBothLastDayInFebruary) {
+    if (month && endDay < beginDay && !isBothLastDayInFebruary)
+        month--;
 
-        if (month && endDay < beginDay)
-            month--;
+    uint day = 0;
+    if (!isBothLastDayInFebruary) {
         if (endDay >= beginDay)
             day = endDay - beginDay;
         else {
