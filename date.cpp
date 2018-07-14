@@ -24,7 +24,7 @@ uint MonthSize(uint year, uint month) {
 }
 
 Date DatePack(uint year, uint month, uint day) {
-    return (year << 16) | (month << 8) | day;
+    return year << 16 | (month & 0xF) << 8 | day & 0xFF;
 }
 
 void DateUnpack(Date date, uint* year, uint* month, uint* day) {
