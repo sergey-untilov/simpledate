@@ -40,7 +40,7 @@ public:
     }
 
     int getPassed() {
-        return failed;
+        return passed;
     }
 
     int getFailed() {
