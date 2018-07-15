@@ -1,14 +1,15 @@
 #pragma once
 
 #include <iostream>
+#include <iomanip>
 #include <ctime>
 
 using namespace std;
 
 class Test {
 private:
-    int errors;
     int passed;
+    int failed;
 
     std::string getHead() {
         time_t rawtime;
@@ -24,25 +25,31 @@ private:
     }
 
 public:
-    explicit Test() : errors(0), passed(0) {}
+    explicit Test() : passed(0), failed(0) {}
 
     void assert_true(string description, bool result) {
-        cout << getHead() << description << ".\t\tResult: " << result << endl;
-        result ? passed++ : errors++;
+        result ? passed++ : failed++;
+        cout << getHead()
+             << setw(50) << left << description << "\t"
+             << (result ? "Passed" : "Failed") << endl;
     }
 
     void start() {
         cout << getHead() << "Tests started." << endl;
     }
 
-    int getErrors() {
-        return errors;
+    int getPassed() {
+        return failed;
+    }
+
+    int getFailed() {
+        return failed;
     }
 
     void finish() {
         cout << getHead()
              << "Tests finished." << endl
              << "Passed: " << passed << "." << endl
-             << "Errors: " << errors << "." << endl;
+             << "Failed: " << failed << "." << endl;
     }
 };

@@ -9,7 +9,7 @@
             "command": "g++",
             "args": [
                 "-g",
-                "-oapp",
+                "-otest_date",
                 "test_date.cpp",
                 "date.cpp"
             ],

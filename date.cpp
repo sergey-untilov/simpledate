@@ -3,6 +3,15 @@
 #include <string>
 #include "date.h"
 
+Date DateNow() {
+    time_t rawtime;
+    struct tm* timeinfo;
+    time(&rawtime);
+    timeinfo = localtime(&rawtime);
+    Date now = DatePack(1900 + timeinfo->tm_year, timeinfo->tm_mon, timeinfo->tm_mday);
+    return now;
+}
+
 uint Year(Date date) {
     return date / 10000;
 }
@@ -104,6 +113,48 @@ Date DateAdd(Date date, int years, int months, int days) {
 
     date = DatePack(year, month, day);
     return date;
+}
+
+Date MonthBegin(Date date) {
+    uint year = Year(date);
+    uint month = Month(date);
+    return DatePack(year, month, 1);
+}
+
+Date MonthEnd(Date date) {
+    uint year = Year(date);
+    uint month = Month(date);
+    uint monthSize = MonthSize(year, month);
+    return DatePack(year, month, monthSize);
+}
+
+Date QuarterBegin(Date date) {
+    uint year = Year(date);
+    uint month = Month(date);
+    if (month < 1 || month > 12)
+        return 0;
+    static uint firstMonthInQuarter[] = {1,1,1,4,4,4,7,7,7,10,10,10};
+    return DatePack(year, firstMonthInQuarter[month - 1], 1);
+}
+Date QuarterEnd(Date date) {
+    uint year = Year(date);
+    uint month = Month(date);
+    if (month < 1 || month > 12)
+        return 0;
+    static uint lastMonthInQuarter[] = {3,3,3,6,6,6,9,9,9,12,12,12};
+    month = lastMonthInQuarter[month -1];
+    uint monthSize = MonthSize(year, month);
+    return DatePack(year, month, monthSize);
+}
+
+Date YearBegin(Date date) {
+    uint year = Year(date);
+    return DatePack(year, 1, 1);
+}
+
+Date YearEnd(Date date) {
+    uint year = Year(date);
+    return DatePack(year, 12, 31);
 }
 
 Date DateInterval(Date begin, Date end) {
