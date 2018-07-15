@@ -3,10 +3,13 @@ SimpleDate
 SimpleDate is a small C++ library that gives you a simple implementation of Date
 type in readable format - YYYYMMDD.
 
+It's important when you need to see dates in a debugger without extra logging,
+printing, etc.
+
 It uses unsigned long to store a date. For example, date 26 January 1980 be
 stored in a number 19800126.
 
-There are some functions which manipulate with a date.
+There are some functions in a library which manipulates with a date type.
 
 Examples of usage
 -----------------
