@@ -4,13 +4,15 @@ SimpleDate
 SimpleDate is a small C++ library that gives you a simple implementation of Date
 type in readable format - YYYYMMDD.
 
-It's important when you need to see dates in a debugger without extra logging,
+It's important when you need to see dates in a debugger without extra converting, logging,
 printing, etc.
 
 It uses unsigned long to store a date. For example, date 26 January 1980 be
 stored in a number 19800126.
 
-There are some functions in a library which manipulates with a date type.
+Relational and arithmetic operators have been overloaded and you can compare and assign values using standard operators (= == != >= <= ++ -- += -=).
+
+There are some extra methods for date manipulating, like begin or end of a month, begin or end of a quarter,  begin or end of a year.
 
 Examples of usage
 -----------------
@@ -20,84 +22,88 @@ Get current date
 ```c++
 #include "date.h"
 ...
-Date date = DateNow(); // YYYYMMDD
+Date now = Date::now();
+```
+
+Initialize
+
+```c++
+Date date(1980, 12, 31);
 ```
 
 Set date
 
 ```c++
-Date date = DatePack(1980, 11, 30); // 19801130
+date.setDate(1980, 11, 30);
 ```
 
 Get year, month, day from date
 
 ```c++
-uint year = Year(date);
-uint month = Month(date);
-uint day = Day(date);
+int year = date.year();
+int month = date.month();
+int day = date.day();
 ```
 
 Get size of a month
 
 ```c++
-uint monthSize = MonthSize(2018, 2);
-```
-
-Get year, month, day from date in one invoke
-
-```c++
-uint year, month, day;
-DateUnpack(date, &year, &month, &day);
+int monthSize = Date::monthSize(2018, 2);
 ```
 
 Check date
 
 ```c++
-if (IsDateValid(date))
+if (date.isValid())
     ...
 ```
 
 Shift date
 
 ```c++
-Date shiftedDate = DateAdd(date, years, months, days);
-Date nextDay = DateAdd(date, 0, 0, 1);
-Date previousDay = DateAdd(date, 0, 0, -1);
+date++;                 // next day
+date += 7;              // over week
+date.shift(0, 1, 0);    // shift for 1 month
+date.shift(1, 0, 0);    // shift for 1 year
+date--;                 // prior day
+date.shift(-1,0,0);     // shift for -1 year
 ```
 
 Begin of a month
 
 ```c++
-Date monthBegin = MonthBegin(date); // 31.12.1980 -> 01.12.1980
+date.setDate(1980, 12, 31);
+date.monthBegin();      // 31.12.1980 -> 01.12.1980
 ```
 
 End of a month
 
 ```c++
-Date monthEnd = MonthEnd(date); // 20.12.1980 -> 31.12.1980
+date.setDate(1980, 12, 15);
+date.monthEnd();        // 15.12.1980 -> 31.12.1980
 ```
 
 Some extra functions
 
 ```c++
-Date date = DatePack(2010, 8, 25);
-Date quarterBegin = QuarterBegin(date); // 25.08.2010 -> 01.07.2010
-Date quarterEnd = QuarterEnd(date);     // 25.08.2010 -> 30.09.2010
-Date yearBegin = YearBegin(date);       // 25.08.2010 -> 01.01.2010
-Date yearEnd = YearEnd(date);           // 25.08.2010 -> 31.12.2010
+Date date(2010, 8, 25);
+date.quarterBegin();    // 01.07.2010
+date.quarterEnd();      // 30.09.2010
+date.yearBegin();       // 01.01.2010
+date.yearEnd();         // 31.12.2010
 ```
 
 Interval between 2 dates
 
 ```c++
-Date begin = DatePack(1980, 1, 1);
-Date end = DatePack(1981, 2, 2);
-Date interval = DateInterval(begin, end); // 010101 = 1 year 1 month 1 day
+Date begin(1980, 1, 1);
+Date end(1981, 2, 2);
+Date interval = begin.diff(end); // 010101 = 1 year 1 month 1 day
 ```
 
 Convert date to string
 
 ```c++
-Date date = DatePack(2010, 8, 25);
-std::string str = DateToStr(date, '-'); // "2010-08-25"
+Date date(2010, 8, 25);
+date.toString('-');     // "2010-08-25"
 ```
