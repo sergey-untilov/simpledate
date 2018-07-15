@@ -1,172 +1,264 @@
 #include <cassert>
-#include <stdlib.h>
 #include <string>
+#include <ctime>
 #include "date.h"
 
-Date DateNow() {
-    time_t rawtime;
-    struct tm* timeinfo;
-    time(&rawtime);
-    timeinfo = localtime(&rawtime);
-    Date now = DatePack(1900 + timeinfo->tm_year,
-                        timeinfo->tm_mon,
-                        timeinfo->tm_mday);
-    return now;
+static TDate _makeTDate(int year, int month, int day);
+static Date _diff(const Date& begin, const Date& end);
+
+Date::Date()
+    : tdate(0) {}
+
+Date::Date(int year, int month, int day) {
+    tdate = _makeTDate(year, month, day);
 }
 
-uint Year(Date date) {
-    return date / 10000;
+int Date::year() const {
+    return tdate / 10000;
 }
 
-uint Month(Date date) {
-    return date / 100 % 100;
+int Date::month() const {
+    return tdate / 100 % 100;
 }
 
-uint Day(Date date) {
-    return date % 100;
+int Date::day() const {
+    return tdate % 100;
 }
 
-uint MonthSize(uint year, uint month) {
+TDate Date::getTDate() const {
+    return tdate;
+}
+
+int Date::monthSize(int year, int month) {
     assert(month >= 1 && month <= 12);
     if (month == 2 && year % 4 == 0)
         return 29;
-    static const uint monthSize[] = {31,28,31,30,31,30,31,31,30,31,30,31};
-    return monthSize[month - 1];
+    static const int monSize[] = {31,28,31,30,31,30,31,31,30,31,30,31};
+    return monSize[month - 1];
 }
 
-Date DatePack(uint year, uint month, uint day) {
-    return year * 10000 + month * 100 + day;
+Date Date::now() {
+    std::time_t rawtime = std::time(nullptr);
+    std::tm* tm = std::localtime(&rawtime);
+    Date date(1900 + tm->tm_year, tm->tm_mon, tm->tm_mday);
+    return date;
 }
 
-void DateUnpack(Date date, uint* year, uint* month, uint* day) {
-    if (year)
-        *year = Year(date);
-    if (month)
-        *month = Month(date);
-    if (day)
-        *day = Day(date);
-}
-
-bool IsDateValid(Date date) {
-    uint year = Year(date);
-    uint month = Month(date);
-    uint day = Day(date);
-    if (month < 1 || month > 12)
+bool Date::isValid() const {
+    int y = year();
+    int m = month();
+    int d = day();
+    if (m < 1 || m > 12)
         return false;
-    if (day < 1)
+    if (d < 1)
         return false;
-    uint monthSize = MonthSize(year, month);
-    if (day > monthSize)
+    int monSize = Date::monthSize(y, m);
+    if (d > monSize)
         return false;
     return true;
 }
 
-Date DateAdd(Date date, int years, int months, int days) {
-    uint year = Year(date);
-    uint month = Month(date);
-    uint day = Day(date);
+Date Date::diff(const Date& end) const {
+    return _diff(*this, end);
+}
+
+std::string Date::toString(char separator) const {
+    char buffer[11];
+    sprintf(buffer, "%04d%c%02d%c%02d",
+        year(), separator, month(), separator, day());
+    return buffer;
+}
+
+Date& Date::setDate(int year, int month, int day) {
+    tdate = _makeTDate(year, month, day);
+    return *this;
+}
+
+Date& Date::shift(int years, int months, int days) {
+    int y = year();
+    int m = month();
+    int d = day();
 
     years += months / 12;
     months %= 12;
 
-    if (years < 0 && abs(years) > year)
-        return 0;
+    if (years < 0 && abs(years) > y) {
+        tdate = 0;
+        return *this;
+    }
 
-    year += years;
+    y += years;
 
-    if (months > 0 && month + months > 12) {
-        year++;
-        month += months - 12;
-    } else if (months < 0 && abs(months) > month ) {
-        month += 12 - months;
+    if (months > 0 && m + months > 12) {
+        y++;
+        m += months - 12;
+    } else if (months < 0 && abs(months) > m) {
+        m += 12 - months;
     } else
-        month += months;
+        m += months;
 
     while(days) {
-        uint monthSize = MonthSize(year, month);
-        if (days < 0 && abs(days) >= day) {
-            if (month == 1) {
-                if (!year)
-                    return 0;
-                days += day;
-                year--;
-                month = 12;
-                day = 31;
+        int monSize = Date::monthSize(y, m);
+        if (days < 0 && abs(days) >= d) {
+            if (m == 1) {
+                if (!y)
+                    return *this;
+                days += d;
+                y--;
+                m = 12;
+                d = 31;
             } else {
-                days += day;
-                month--;
-                day = MonthSize(year, month);
+                days += d;
+                m--;
+                d = Date::monthSize(y, m);
             }
-        } else if (days + day > monthSize) {
-            days = days < day ? 0 : days - day;
-            if (month == 12) {
-                year++;
-                month = 1;
-                day = 1;
+        } else if (days + d > monSize) {
+            days = days < d ? 0 : days - d;
+            if (m == 12) {
+                y++;
+                m = 1;
+                d = 1;
             } else {
-                month++;
-                day = 1;
+                m++;
+                d = 1;
             }
         } else {
-            day += days;
+            d += days;
             days = 0;
         }
     }
 
-    date = DatePack(year, month, day);
-    return date;
+    setDate(y, m, d);
+    return *this;
 }
 
-Date MonthBegin(Date date) {
-    uint year = Year(date);
-    uint month = Month(date);
-    return DatePack(year, month, 1);
+Date& Date::monthBegin() {
+    setDate(year(), month(), 1);
+    return *this;
 }
 
-Date MonthEnd(Date date) {
-    uint year = Year(date);
-    uint month = Month(date);
-    uint monthSize = MonthSize(year, month);
-    return DatePack(year, month, monthSize);
+Date& Date::monthEnd() {
+    int y = year();
+    int m = month();
+    int d = Date::monthSize(y, m);
+    setDate(y, m, d);
+    return *this;
 }
 
-Date QuarterBegin(Date date) {
-    uint year = Year(date);
-    uint month = Month(date);
-    if (month < 1 || month > 12)
-        return 0;
-    static const uint firstMonthInQuarter[] = {1,1,1,4,4,4,7,7,7,10,10,10};
-    return DatePack(year, firstMonthInQuarter[month - 1], 1);
+Date& Date::quarterBegin() {
+    int y = year();
+    int m = month();
+    if (m < 1 || m > 12)
+        return *this;
+    static const int firstMonthInQuarter[] = {1,1,1,4,4,4,7,7,7,10,10,10};
+    setDate(y, firstMonthInQuarter[m - 1], 1);
+    return *this;
 }
 
-Date QuarterEnd(Date date) {
-    uint year = Year(date);
-    uint month = Month(date);
-    if (month < 1 || month > 12)
-        return 0;
-    static const uint lastMonthInQuarter[] = {3,3,3,6,6,6,9,9,9,12,12,12};
-    month = lastMonthInQuarter[month -1];
-    uint monthSize = MonthSize(year, month);
-    return DatePack(year, month, monthSize);
+Date& Date::quarterEnd() {
+    int y = year();
+    int m = month();
+    if (m < 1 || m > 12)
+        return *this;
+    static const int lastMonthInQuarter[] = {3,3,3,6,6,6,9,9,9,12,12,12};
+    m = lastMonthInQuarter[m - 1];
+    int d = Date::monthSize(y, m);
+    setDate(y, m, d);
+    return *this;
 }
 
-Date YearBegin(Date date) {
-    uint year = Year(date);
-    return DatePack(year, 1, 1);
+Date& Date::yearBegin() {
+    setDate(year(), 1, 1);
+    return *this;
 }
 
-Date YearEnd(Date date) {
-    uint year = Year(date);
-    return DatePack(year, 12, 31);
+Date& Date::yearEnd() {
+    setDate(year(), 12, 31);
+    return *this;
 }
 
-Date DateInterval(Date begin, Date end) {
-    uint beginYear = Year(begin);
-    uint beginMonth = Month(begin);
-    uint beginDay = Day(begin);
-    uint endYear = Year(end);
-    uint endMonth = Month(end);
-    uint endDay = Day(end);
+Date& Date::operator=(const Date& rv) {
+    if (this != &rv)
+        this->tdate = rv.tdate;
+    return *this;
+}
+
+Date& Date::operator=(const TDate tdate) {
+    this->tdate = tdate;
+    return *this;
+}
+
+Date& Date::operator++() {
+    shift(0, 0, 1);
+    return *this;
+
+}
+
+Date Date::operator++(int) {
+    Date tmp = *this;
+    shift(0, 0, 1);
+    return tmp;
+}
+
+Date& Date::operator--() {
+    shift(0, 0, -1);
+    return *this;
+}
+
+Date Date::operator--(int days) {
+    Date tmp = *this;
+    shift(0, 0, -1);
+    return tmp;
+}
+
+Date& Date::operator+=(int days) {
+    shift(0, 0, days);
+    return *this;
+}
+
+Date& Date::operator-=(int days) {
+    shift(0, 0, -days);
+    return *this;
+}
+
+Date& Date::operator+=(const Date& rv) {
+    shift(rv.year(), rv.month(), rv.day());
+    return *this;
+}
+
+Date& Date::operator-=(const Date& rv) {
+    shift(-rv.year(), -rv.month(), -rv.day());
+    return *this;
+}
+
+Date operator+(Date lv, const Date& rv) {
+    lv += rv;
+    return lv;
+}
+Date operator-(Date lv, const Date& rv) {
+    lv -= rv;
+    return lv;
+}
+Date operator+(Date lv, const int days) {
+    lv += days;
+    return lv;
+}
+Date operator-(Date lv, const int days) {
+    lv -= days;
+    return lv;
+}
+
+static TDate _makeTDate(int year, int month, int day) {
+    return year * 10000 + month * 100 + day;
+}
+
+static Date _diff(const Date& begin, const Date& end) {
+    uint beginYear = begin.year();
+    uint beginMonth = begin.month();
+    uint beginDay = begin.day();
+    uint endYear = end.year();
+    uint endMonth = end.month();
+    uint endDay = end.day();
 
     uint year = endYear - beginYear;
     if (year && endMonth < beginMonth)
@@ -178,8 +270,8 @@ Date DateInterval(Date begin, Date end) {
 
     bool isBothLastDayInFebruary =
         endMonth == 2 && beginMonth == 2 && endYear != beginYear
-        && endDay == MonthSize(endYear, endMonth)
-        && beginDay == MonthSize(beginYear, beginMonth);
+        && endDay == Date::monthSize(endYear, endMonth)
+        && beginDay == Date::monthSize(beginYear, beginMonth);
 
     if (month && endDay < beginDay && !isBothLastDayInFebruary)
         month--;
@@ -189,17 +281,12 @@ Date DateInterval(Date begin, Date end) {
         if (endDay >= beginDay)
             day = endDay - beginDay;
         else {
-            uint monthSize = MonthSize(beginYear, beginMonth);
-            day = endDay + beginDay - monthSize;
+            uint monSize = Date::monthSize(beginYear, beginMonth);
+            day = endDay + beginDay - monSize;
         }
     }
 
-    return DatePack(year, month, day);
+    Date date(year, month, day);
+    return date;
 }
 
-std::string DateToStr(Date date, char separator) {
-    char buffer[11];
-    sprintf(buffer, "%04d%c%02d%c%02d",
-        Year(date), separator, Month(date), separator, Day(date));
-    return std::string(buffer);
-}
