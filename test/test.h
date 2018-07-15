@@ -6,7 +6,8 @@
 
 using namespace std;
 
-class Test {
+class Test
+{
 private:
     int passed;
     int failed;

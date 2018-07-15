@@ -1,4 +1,4 @@
-#include "date.h"
+#include "../src/date.h"
 #include "test.h"
 
 int main(void) {
@@ -18,31 +18,38 @@ int main(void) {
 
     date = DateAdd(date, 0, 0, 1);
     DateUnpack(date, &year, &month, &day);
-    test.assert_true(DateToStr(date, '-'), year == 1980 && month == 1 && day == 2);
+    test.assert_true(DateToStr(date, '-'),
+                     year == 1980 && month == 1 && day == 2);
 
     date = DateAdd(date, 0, 1, 0);
     DateUnpack(date, &year, &month, &day);
-    test.assert_true(DateToStr(date, '-'), year == 1980 && month == 2 && day == 2);
+    test.assert_true(DateToStr(date, '-'),
+                     year == 1980 && month == 2 && day == 2);
 
     date = DateAdd(date, 1, 0, 0);
     DateUnpack(date, &year, &month, &day);
-    test.assert_true(DateToStr(date, '-'), year == 1981 && month == 2 && day == 2);
+    test.assert_true(DateToStr(date, '-'),
+                     year == 1981 && month == 2 && day == 2);
 
     date = DateAdd(date, -1, 0, 0);
     DateUnpack(date, &year, &month, &day);
-    test.assert_true(DateToStr(date, '-'), year == 1980 && month == 2 && day == 2);
+    test.assert_true(DateToStr(date, '-'),
+                     year == 1980 && month == 2 && day == 2);
 
     date = DateAdd(date, 0, -1, 0);
     DateUnpack(date, &year, &month, &day);
-    test.assert_true(DateToStr(date, '-'), year == 1980 && month == 1 && day == 2);
+    test.assert_true(DateToStr(date, '-'),
+                     year == 1980 && month == 1 && day == 2);
 
     date = DateAdd(date, 0, 0, -1);
     DateUnpack(date, &year, &month, &day);
-    test.assert_true(DateToStr(date, '-'), year == 1980 && month == 1 && day == 1);
+    test.assert_true(DateToStr(date, '-'),
+                     year == 1980 && month == 1 && day == 1);
 
     date = DateAdd(date, 0, 0, -1);
     DateUnpack(date, &year, &month, &day);
-    test.assert_true(DateToStr(date, '-'), year == 1979 && month == 12 && day == 31);
+    test.assert_true(DateToStr(date, '-'),
+                     year == 1979 && month == 12 && day == 31);
 
     Date dateBegin = DatePack(1980, 1, 1);
     Date dateEnd = DatePack(1980, 1, 1);

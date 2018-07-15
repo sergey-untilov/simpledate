@@ -8,7 +8,9 @@ Date DateNow() {
     struct tm* timeinfo;
     time(&rawtime);
     timeinfo = localtime(&rawtime);
-    Date now = DatePack(1900 + timeinfo->tm_year, timeinfo->tm_mon, timeinfo->tm_mday);
+    Date now = DatePack(1900 + timeinfo->tm_year,
+                        timeinfo->tm_mon,
+                        timeinfo->tm_mday);
     return now;
 }
 
@@ -28,7 +30,7 @@ uint MonthSize(uint year, uint month) {
     assert(month >= 1 && month <= 12);
     if (month == 2 && year % 4 == 0)
         return 29;
-    static uint monthSize[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+    static const uint monthSize[] = {31,28,31,30,31,30,31,31,30,31,30,31};
     return monthSize[month - 1];
 }
 
@@ -133,15 +135,16 @@ Date QuarterBegin(Date date) {
     uint month = Month(date);
     if (month < 1 || month > 12)
         return 0;
-    static uint firstMonthInQuarter[] = {1,1,1,4,4,4,7,7,7,10,10,10};
+    static const uint firstMonthInQuarter[] = {1,1,1,4,4,4,7,7,7,10,10,10};
     return DatePack(year, firstMonthInQuarter[month - 1], 1);
 }
+
 Date QuarterEnd(Date date) {
     uint year = Year(date);
     uint month = Month(date);
     if (month < 1 || month > 12)
         return 0;
-    static uint lastMonthInQuarter[] = {3,3,3,6,6,6,9,9,9,12,12,12};
+    static const uint lastMonthInQuarter[] = {3,3,3,6,6,6,9,9,9,12,12,12};
     month = lastMonthInQuarter[month -1];
     uint monthSize = MonthSize(year, month);
     return DatePack(year, month, monthSize);

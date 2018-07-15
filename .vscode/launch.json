@@ -5,10 +5,10 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "(gdb) Launch",
+            "name": "(gdb) Launch test",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/test_date",
+            "program": "${workspaceFolder}/out/test",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

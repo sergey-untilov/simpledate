@@ -4,19 +4,20 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Build",
+            "label": "BuildTests",
             "type": "shell",
             "command": "g++",
             "args": [
                 "-g",
-                "-otest_date",
-                "test_date.cpp",
-                "date.cpp"
+                "-oout/test",
+                "test/test.cpp",
+                "src/date.cpp"
             ],
             "group": {
                 "kind": "build",
                 "isDefault": true
-            }
+            },
+            "problemMatcher": []
         }
     ]
 }
