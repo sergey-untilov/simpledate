@@ -1,5 +1,5 @@
-SimpleDate
-==========
+SimpleDate for C++
+==================
 
 SimpleDate is a small C++ library that gives you a simple implementation of Date
 type in readable format - YYYYMMDD.
