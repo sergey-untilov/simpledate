@@ -4,15 +4,15 @@
 #include "date.h"
 
 uint Year(Date date) {
-    return date >> 16;
+    return date / 10000;
 }
 
 uint Month(Date date) {
-    return date >> 8 & 0xFF;
+    return date / 100 % 100;
 }
 
 uint Day(Date date) {
-    return date & 0xFF;
+    return date % 100;
 }
 
 uint MonthSize(uint year, uint month) {
@@ -24,7 +24,7 @@ uint MonthSize(uint year, uint month) {
 }
 
 Date DatePack(uint year, uint month, uint day) {
-    return year << 16 | (month & 0xF) << 8 | day & 0xFF;
+    return year * 10000 + month * 100 + day;
 }
 
 void DateUnpack(Date date, uint* year, uint* month, uint* day) {
