@@ -6,8 +6,7 @@
 static TDate _makeTDate(int year, int month, int day);
 static Date _diff(const Date& begin, const Date& end);
 
-Date::Date()
-    : tdate(0) {}
+Date::Date() : tdate(0) {}
 
 Date::Date(int year, int month, int day) {
     tdate = _makeTDate(year, month, day);
