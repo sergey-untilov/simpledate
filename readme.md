@@ -1,18 +1,20 @@
 SimpleDate for C++
 ==================
 
-SimpleDate is a small C++ library that gives you a simple implementation of Date
-type in readable format - YYYYMMDD.
+SimpleDate is a small C++ library that gives you an implementation of Date type
+in readable format - YYYYMMDD.
 
-It's important when you need to see dates in a debugger without extra converting, logging,
-printing, etc.
+It's important when you need to see dates in a debugger without extra
+converting, logging, printing, etc.
 
 It uses unsigned long to store a date. For example, date 26 January 1980 be
 stored in a number 19800126.
 
-Relational and arithmetic operators have been overloaded and you can compare and assign values using standard operators (= == != >= <= ++ -- += -=).
+Relational and arithmetic operators have been overloaded and you can compare and
+assign values using standard operators (= == != >= <= ++ -- += -=).
 
-There are some extra methods for date manipulating, like begin or end of a month, begin or end of a quarter,  begin or end of a year.
+There are some extra methods for date manipulating, like begin or end of a
+month, begin or end of a quarter,  begin or end of a year.
 
 Examples of usage
 -----------------
