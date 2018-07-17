@@ -111,6 +111,23 @@ int main(void) {
         date.year() == 0xFFFFFFFF && date.month() == 0xFFFFFFFF
         && date.day() == 0xFFFFFFFF);
 
+    date.setDate(1980, 2, 29);
+    date.shift(1, 0, 0);
+    test.assert_true(date.toString('-'), date.isValid());
+
+    date.setDate(1980, 1, 31);
+    date.shift(0, 1, 0);
+    test.assert_true(date.toString('-'), date.isValid());
+
+    date.setDate(1980, 3, 31);
+    date -= 31;
+    test.assert_true(date.toString('-'), date.isValid());
+
+    date.setDate(1980, 1, 31);
+    date += 30;
+    test.assert_true(date.toString('-'), date.isValid());
+
+
     test.finish();
 
     std::getchar();

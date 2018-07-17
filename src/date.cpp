@@ -3,8 +3,11 @@
 #include <ctime>
 #include "date.h"
 
-static TDate _makeTDate(int year, int month, int day);
-static Date _diff(const Date& begin, const Date& end);
+TDate _makeTDate(int year, int month, int day);
+Date _diff(const Date& begin, const Date& end);
+void _addDays(int& y, int& m, int& d, int days);
+void _addMonths(int& y, int&m, int& d, int months);
+void _addYears(int& y, int&m, int& d, int years);
 
 Date::Date() : tdate(0) {}
 
@@ -43,17 +46,19 @@ Date Date::now() {
     return date;
 }
 
-bool Date::isValid() const {
-    int m = month();
+bool _isDateValid(int y, int m, int d) {
     if (m < 1 || m > 12)
         return false;
-    int d = day();
     if (d < 1)
         return false;
-    int monSize = Date::monthSize(year(), m);
+    int monSize = Date::monthSize(y, m);
     if (d > monSize)
         return false;
     return true;
+}
+
+bool Date::isValid() const {
+    return _isDateValid(year(), month(), day());
 }
 
 Date Date::diff(const Date& end) const {
@@ -76,56 +81,9 @@ Date& Date::shift(int years, int months, int days) {
     int y = year();
     int m = month();
     int d = day();
-
-    years += months / 12;
-    months %= 12;
-
-    if (years < 0 && abs(years) > y) {
-        tdate = 0;
-        return *this;
-    }
-
-    y += years;
-
-    if (months > 0 && m + months > 12) {
-        y++;
-        m += months - 12;
-    } else if (months < 0 && abs(months) > m) {
-        m += 12 - months;
-    } else
-        m += months;
-
-    while(days) {
-        int monSize = Date::monthSize(y, m);
-        if (days < 0 && abs(days) >= d) {
-            if (m == 1) {
-                if (!y)
-                    return *this;
-                days += d;
-                y--;
-                m = 12;
-                d = 31;
-            } else {
-                days += d;
-                m--;
-                d = Date::monthSize(y, m);
-            }
-        } else if (days + d > monSize) {
-            days = days < d ? 0 : days - d;
-            if (m == 12) {
-                y++;
-                m = 1;
-                d = 1;
-            } else {
-                m++;
-                d = 1;
-            }
-        } else {
-            d += days;
-            days = 0;
-        }
-    }
-
+    _addYears(y, m, d, years);
+    _addMonths(y, m, d, months);
+    _addDays(y, m, d, days);
     setDate(y, m, d);
     return *this;
 }
@@ -245,11 +203,11 @@ Date operator-(Date lv, const int days) {
     return lv;
 }
 
-static TDate _makeTDate(int year, int month, int day) {
+TDate _makeTDate(int year, int month, int day) {
     return year * 10000 + month * 100 + day;
 }
 
-static Date _diff(const Date& begin, const Date& end) {
+Date _diff(const Date& begin, const Date& end) {
     uint beginYear = begin.year();
     uint beginMonth = begin.month();
     uint beginDay = begin.day();
@@ -287,3 +245,57 @@ static Date _diff(const Date& begin, const Date& end) {
     return date;
 }
 
+void _addDays(int& y, int& m, int& d, int days) {
+    while(days) {
+        int monSize = Date::monthSize(y, m);
+        if (days < 0 && abs(days) >= d) {
+            if (m == 1) {
+                if (!y)
+                    return;
+                days += d;
+                y--;
+                m = 12;
+                d = 31;
+            } else {
+                days += d;
+                m--;
+                d = Date::monthSize(y, m);
+            }
+        } else if (days + d > monSize) {
+            days = days < d ? 0 : days - d;
+            if (m == 12) {
+                y++;
+                m = 1;
+                d = 1;
+            } else {
+                m++;
+                d = 1;
+            }
+        } else {
+            d += days;
+            days = 0;
+        }
+    }
+}
+
+void _addMonths(int& y, int&m, int& d, int months) {
+    y += months / 12;
+    months %= 12;
+    if (months > 0 && m + months > 12) {
+        y++;
+        m += months - 12;
+    } else if (months < 0 && abs(months) > m) {
+        m += 12 - months;
+    } else
+        m += months;
+
+    if (m == 2) {
+        int monSize = Date::monthSize(y, m);
+        if (d > monSize)
+            d = monSize;
+    }
+}
+
+void _addYears(int& y, int&m, int& d, int years) {
+    _addMonths(y, m, d, years * 12);
+}
