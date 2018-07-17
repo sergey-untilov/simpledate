@@ -3,11 +3,9 @@
 #include <ctime>
 #include "date.h"
 
-TDate _makeTDate(int year, int month, int day);
-Date _diff(const Date& begin, const Date& end);
-void _addDays(int& y, int& m, int& d, int days);
-void _addMonths(int& y, int&m, int& d, int months);
-void _addYears(int& y, int&m, int& d, int years);
+TDate _makeTDate(int year, int month, int day) {
+    return year * 10000 + month * 100 + day;
+}
 
 Date::Date() : tdate(0) {}
 
@@ -61,8 +59,60 @@ bool Date::isValid() const {
     return _isDateValid(year(), month(), day());
 }
 
-Date Date::diff(const Date& end) const {
-    return _diff(*this, end);
+Date _diff(const Date& begin, const Date& end) {
+    uint beginYear = begin.year();
+    uint beginMonth = begin.month();
+    uint beginDay = begin.day();
+    uint endYear = end.year();
+    uint endMonth = end.month();
+    uint endDay = end.day();
+
+    uint year = endYear - beginYear;
+    if (year && endMonth < beginMonth)
+        year--;
+
+    uint month = (endMonth >= beginMonth)
+        ? endMonth - beginMonth
+        : endMonth + beginMonth - 12;
+
+    bool isBothLastDayInFebruary =
+        endMonth == 2 && beginMonth == 2 && endYear != beginYear
+        && endDay == Date::monthSize(endYear, endMonth)
+        && beginDay == Date::monthSize(beginYear, beginMonth);
+
+    if (month && endDay < beginDay && !isBothLastDayInFebruary)
+        month--;
+
+    uint day = 0;
+    if (!isBothLastDayInFebruary) {
+        if (endDay >= beginDay)
+            day = endDay - beginDay;
+        else {
+            uint monSize = Date::monthSize(beginYear, beginMonth);
+            day = endDay + beginDay - monSize;
+        }
+    }
+
+    Date date(year, month, day);
+    return date;
+}
+
+Date Date::diff(const Date& begin, const Date& end) {
+    if (begin > end)
+    {
+        Date date = _diff(end, begin);
+        date.invert();
+        return date;
+    }
+    return _diff(begin, end);
+}
+
+Date& Date::invert() {
+    int y = year();
+    int m = month();
+    int d = day();
+    setDate(-y, -m, -d);
+    return *this;
 }
 
 std::string Date::toString(char separator) const {
@@ -81,9 +131,9 @@ Date& Date::shift(int years, int months, int days) {
     int y = year();
     int m = month();
     int d = day();
-    _addYears(y, m, d, years);
-    _addMonths(y, m, d, months);
-    _addDays(y, m, d, days);
+    addYears(y, m, d, years);
+    addMonths(y, m, d, months);
+    addDays(y, m, d, days);
     setDate(y, m, d);
     return *this;
 }
@@ -203,49 +253,7 @@ Date operator-(Date lv, const int days) {
     return lv;
 }
 
-TDate _makeTDate(int year, int month, int day) {
-    return year * 10000 + month * 100 + day;
-}
-
-Date _diff(const Date& begin, const Date& end) {
-    uint beginYear = begin.year();
-    uint beginMonth = begin.month();
-    uint beginDay = begin.day();
-    uint endYear = end.year();
-    uint endMonth = end.month();
-    uint endDay = end.day();
-
-    uint year = endYear - beginYear;
-    if (year && endMonth < beginMonth)
-        year--;
-
-    uint month = (endMonth >= beginMonth)
-        ? endMonth - beginMonth
-        : endMonth + beginMonth - 12;
-
-    bool isBothLastDayInFebruary =
-        endMonth == 2 && beginMonth == 2 && endYear != beginYear
-        && endDay == Date::monthSize(endYear, endMonth)
-        && beginDay == Date::monthSize(beginYear, beginMonth);
-
-    if (month && endDay < beginDay && !isBothLastDayInFebruary)
-        month--;
-
-    uint day = 0;
-    if (!isBothLastDayInFebruary) {
-        if (endDay >= beginDay)
-            day = endDay - beginDay;
-        else {
-            uint monSize = Date::monthSize(beginYear, beginMonth);
-            day = endDay + beginDay - monSize;
-        }
-    }
-
-    Date date(year, month, day);
-    return date;
-}
-
-void _addDays(int& y, int& m, int& d, int days) {
+void Date::addDays(int& y, int& m, int& d, int days) {
     while(days) {
         int monSize = Date::monthSize(y, m);
         if (days < 0 && abs(days) >= d) {
@@ -278,7 +286,7 @@ void _addDays(int& y, int& m, int& d, int days) {
     }
 }
 
-void _addMonths(int& y, int&m, int& d, int months) {
+void Date::addMonths(int& y, int&m, int& d, int months) {
     y += months / 12;
     months %= 12;
     if (months > 0 && m + months > 12) {
@@ -296,6 +304,6 @@ void _addMonths(int& y, int&m, int& d, int months) {
     }
 }
 
-void _addYears(int& y, int&m, int& d, int years) {
-    _addMonths(y, m, d, years * 12);
+void Date::addYears(int& y, int&m, int& d, int years) {
+    addMonths(y, m, d, years * 12);
 }

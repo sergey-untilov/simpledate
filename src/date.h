@@ -8,19 +8,23 @@ class Date {
     private:
         TDate tdate;
 
+        static void addDays(int& y, int& m, int& d, int days);
+        static void addMonths(int& y, int&m, int& d, int months);
+        static void addYears(int& y, int&m, int& d, int years);
+
     public:
         Date();
         Date(int year, int month, int day);
 
         static int monthSize(int year, int month);
         static Date now();
+        static Date diff(const Date& begin, const Date& end);
 
         int year() const;
         int month() const;
         int day() const;
         TDate getTDate() const;
         bool isValid() const;
-        Date diff(const Date&) const;
         std::string toString(char separator) const;
 
         Date& setDate(int year, int month, int day);
@@ -31,6 +35,7 @@ class Date {
         Date& quarterEnd();
         Date& yearBegin();
         Date& yearEnd();
+        Date& invert();
 
         Date& operator=(const Date& rv);
         Date& operator=(const TDate tdate);
@@ -55,8 +60,24 @@ inline bool operator< (const Date& lv, const Date& rv) {
 inline bool operator> (const Date& lv, const Date& rv) { return rv < lv; }
 inline bool operator<=(const Date& lv, const Date& rv) { return !(lv > rv); }
 inline bool operator>=(const Date& lv, const Date& rv) { return !(lv < rv); }
-
 inline bool operator==(const Date& lv, const Date& rv) {
     return lv.getTDate() == rv.getTDate();
 }
 inline bool operator!=(const Date& lv, const Date& rv) { return !(lv == rv);}
+
+template <typename T>
+inline bool operator< (const Date& lv, const T rv) {
+    return lv.getTDate() < rv;
+}
+template <typename T>
+inline bool operator> (const Date& lv, const T rv) { return rv < lv; }
+template <typename T>
+inline bool operator<=(const Date& lv, const T rv) { return !(lv > rv); }
+template <typename T>
+inline bool operator>=(const Date& lv, const T rv) { return !(lv < rv); }
+template <typename T>
+inline bool operator==(const Date& lv, const T rv) {
+    return lv.getTDate() == rv;
+}
+template <typename T>
+inline bool operator!=(const Date& lv, const T rv) { return !(lv == rv);}

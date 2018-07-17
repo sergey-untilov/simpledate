@@ -51,23 +51,28 @@ int main(void) {
 
     Date dateBegin(1980, 1, 1);
     Date dateEnd(1980, 1, 1);
-    Date diff = dateBegin.diff(dateEnd);
+    Date diff = Date::diff(dateBegin, dateEnd);
     test.assert_true(
         diff.toString('-'),
         !diff.year() && !diff.month() && !diff.day());
 
     dateEnd.setDate(1981, 2, 2);
-    diff = dateBegin.diff(dateEnd);
+    diff = Date::diff(dateBegin, dateEnd);
     test.assert_true(
         diff.toString('-'),
         diff.year() == 1 && diff.month() == 1 && diff.day() == 1);
 
     dateBegin.setDate(1980, 2, 29);
     dateEnd.setDate(1981, 2, 28);
-    diff = dateBegin.diff(dateEnd);
+    diff = Date::diff(dateBegin, dateEnd);
     test.assert_true(
         diff.toString('-'),
         diff.year() == 1 && diff.month() == 0 && diff.day() == 0);
+
+    dateBegin.setDate(1980, 1, 1);
+    dateEnd.setDate(1981, 1, 1);
+    diff = Date::diff(dateEnd, dateBegin);
+    test.assert_true(diff.toString('-'), diff < 0);
 
     date.setDate(1980, 4, 23);
     date.monthBegin();
@@ -126,7 +131,6 @@ int main(void) {
     date.setDate(1980, 1, 31);
     date += 30;
     test.assert_true(date.toString('-'), date.isValid());
-
 
     test.finish();
 
