@@ -36,6 +36,7 @@ Date date(1980, 12, 31);
 Set date
 
 ```c++
+Date date;
 date.setDate(1980, 11, 30);
 ```
 
@@ -50,7 +51,7 @@ int day = date.day();
 Get size of a month
 
 ```c++
-int monthSize = Date::monthSize(2018, 2);
+int monthSize = Date::monthSize(2018, 2); // 28
 ```
 
 Check date
