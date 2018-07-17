@@ -62,7 +62,7 @@ Date Date::diff(const Date& end) const {
 }
 
 std::string Date::toString(char separator) const {
-    char buffer[11];
+    char buffer[36];
     sprintf(buffer, "%04d%c%02d%c%02d",
         year(), separator, month(), separator, day());
     return buffer;
