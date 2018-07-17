@@ -100,7 +100,11 @@ Interval between 2 dates
 ```c++
 Date begin(1980, 1, 1);
 Date end(1981, 2, 2);
-Date interval = begin.diff(end); // 010101 = 1 year 1 month 1 day
+Date interval = Date::diff(begin, end); // 010101 = 1 year 1 month 1 day
+
+interval = Date::diff(end, begin); // -10101 = -1 year -1 month -1 day
+if (interval < 0)
+    ...
 ```
 
 Convert date to string

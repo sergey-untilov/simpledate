@@ -74,6 +74,11 @@ int main(void) {
     diff = Date::diff(dateEnd, dateBegin);
     test.assert_true(diff.toString('-'), diff < 0);
 
+    dateBegin.setDate(1980, 1, 1);
+    dateEnd.setDate(1981, 2, 2);
+    diff = Date::diff(dateEnd, dateBegin);
+    test.assert_true(diff.toString('-'), diff < 0);
+
     date.setDate(1980, 4, 23);
     date.monthBegin();
     test.assert_true(
