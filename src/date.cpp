@@ -44,14 +44,13 @@ Date Date::now() {
 }
 
 bool Date::isValid() const {
-    int y = year();
     int m = month();
-    int d = day();
     if (m < 1 || m > 12)
         return false;
+    int d = day();
     if (d < 1)
         return false;
-    int monSize = Date::monthSize(y, m);
+    int monSize = Date::monthSize(year(), m);
     if (d > monSize)
         return false;
     return true;
