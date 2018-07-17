@@ -105,6 +105,12 @@ int main(void) {
         date.toString('-'),
         date.year() == 1980 && date.month() == 12 && date.day() == 31);
 
+    date.setDate(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF);
+    test.assert_true(
+        date.toString('-'),
+        date.year() == 0xFFFFFFFF && date.month() == 0xFFFFFFFF
+        && date.day() == 0xFFFFFFFF);
+
     test.finish();
 
     std::getchar();

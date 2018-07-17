@@ -7,7 +7,7 @@ in readable format - YYYYMMDD.
 It's important when you need to see dates in a debugger without extra
 converting, logging, printing, etc.
 
-It uses unsigned long to store a date. For example, date 26 January 1980 be
+It uses int to store a date. For example, date 26 January 1980 be
 stored in a number 19800126.
 
 Relational and arithmetic operators have been overloaded and you can compare and

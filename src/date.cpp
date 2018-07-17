@@ -145,22 +145,21 @@ Date& Date::monthEnd() {
 }
 
 Date& Date::quarterBegin() {
-    int y = year();
     int m = month();
     if (m < 1 || m > 12)
         return *this;
     static const int firstMonthInQuarter[] = {1,1,1,4,4,4,7,7,7,10,10,10};
-    setDate(y, firstMonthInQuarter[m - 1], 1);
+    setDate(year(), firstMonthInQuarter[m - 1], 1);
     return *this;
 }
 
 Date& Date::quarterEnd() {
-    int y = year();
     int m = month();
     if (m < 1 || m > 12)
         return *this;
     static const int lastMonthInQuarter[] = {3,3,3,6,6,6,9,9,9,12,12,12};
     m = lastMonthInQuarter[m - 1];
+    int y = year();
     int d = Date::monthSize(y, m);
     setDate(y, m, d);
     return *this;

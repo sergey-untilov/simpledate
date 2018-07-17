@@ -2,7 +2,7 @@
 
 #include <string>
 
-typedef unsigned long TDate;
+typedef int TDate;
 
 class Date {
     private:
