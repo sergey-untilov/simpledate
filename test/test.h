@@ -4,8 +4,6 @@
 #include <iomanip>
 #include <ctime>
 
-using namespace std;
-
 class Test
 {
 private:
@@ -28,15 +26,15 @@ private:
 public:
     explicit Test() : passed(0), failed(0) {}
 
-    void assert_true(string description, bool result) {
+    void assert_true(std::string description, bool result) {
         result ? passed++ : failed++;
-        cout << getHead()
-             << setw(50) << left << description << "\t"
-             << (result ? "Passed" : "Failed") << endl;
+        std::cout << getHead()
+             << std::setw(50) << std::left << description << "\t"
+             << (result ? "Passed" : "Failed") << std::endl;
     }
 
     void start() {
-        cout << getHead() << "Tests started." << endl;
+        std::cout << getHead() << "Tests started." << std::endl;
     }
 
     int getPassed() {
@@ -48,9 +46,9 @@ public:
     }
 
     void finish() {
-        cout << getHead()
-             << "Tests finished." << endl
-             << "Passed: " << passed << "." << endl
-             << "Failed: " << failed << "." << endl;
+        std::cout << getHead()
+             << "Tests finished." << std::endl
+             << "Passed: " << passed << "." << std::endl
+             << "Failed: " << failed << "." << std::endl;
     }
 };
